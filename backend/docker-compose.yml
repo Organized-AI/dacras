@@ -1,0 +1,177 @@
+version: '3.8'
+
+services:
+  # Dacras API Server
+  api:
+    build: .
+    container_name: dacras-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongo:27017/dacras_db
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - mongo
+      - redis
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - dacras-network
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MongoDB Database
+  mongo:
+    image: mongo:7
+    container_name: dacras-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: dacras123
+      MONGO_INITDB_DATABASE: dacras_db
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    restart: unless-stopped
+    networks:
+      - dacras-network
+
+  # Redis for job queues and caching
+  redis:
+    image: redis:7-alpine
+    container_name: dacras-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass dacrasredis123
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - dacras-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx Reverse Proxy (optional)
+  nginx:
+    image: nginx:alpine
+    container_name: dacras-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - dacras-network
+    profiles:
+      - production
+
+  # MinIO for S3-compatible object storage (development alternative to AWS S3)
+  minio:
+    image: minio/minio:latest
+    container_name: dacras-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: dacras
+      MINIO_ROOT_PASSWORD: dacras123456
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+    networks:
+      - dacras-network
+    profiles:
+      - development
+
+  # Job Queue Worker (for processing video jobs)
+  worker:
+    build: .
+    container_name: dacras-worker
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongo:27017/dacras_db
+      - REDIS_URL=redis://redis:6379
+      - WORKER_MODE=true
+    depends_on:
+      - mongo
+      - redis
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    command: node worker.js
+    restart: unless-stopped
+    networks:
+      - dacras-network
+    profiles:
+      - production
+
+  # Prometheus for metrics (monitoring)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: dacras-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - dacras-network
+    profiles:
+      - monitoring
+
+  # Grafana for visualization (monitoring)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: dacras-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=dacras123
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+    networks:
+      - dacras-network
+    profiles:
+      - monitoring
+
+volumes:
+  mongo_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  dacras-network:
+    driver: bridge
+    name: dacras-network
