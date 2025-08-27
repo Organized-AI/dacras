@@ -9,8 +9,8 @@ echo ""
 echo "Select an agent to run:"
 echo ""
 echo "1. 🖥️  Frontend Integration Agent - Connect frontend/backend, test components"
-echo "2. 🧪  API Testing Agent - Test all API endpoints, create test suites"  
-echo "3. 🎬  Video Processing Agent - Implement video generation pipeline"
+echo "2. 🧪  API Testing Agent - Test all API endpoints + Texel.ai integration"  
+echo "3. 🎬  Video Processing Agent - Implement video generation with Texel.ai"
 echo "4. 🖼️  Image Generation Agent - Add AI image generation features"
 echo "5. 🔗  Integration & QA Agent - End-to-end testing, quality assurance"
 echo "6. 🚀  DevOps & Monitoring Agent - Deployment, monitoring, infrastructure"
@@ -46,6 +46,10 @@ case $choice in
     2)
         echo ""
         echo "🧪  Starting API Testing Agent..."
+        echo "📚  IMPORTANT: This agent will use the API reference documentation"
+        echo "    Location: docs/API_REFERENCE.md"
+        echo "    Includes: Dacras API + Texel.ai integration specs"
+        echo ""
         echo "Copy this prompt into Claude Code:"
         echo ""
         echo "claude --dangerously-skip-permissions"
@@ -54,11 +58,17 @@ case $choice in
         echo ""
         echo "CODEBASE LOCATION: \"/Users/supabowl/Library/Mobile Documents/com~apple~CloudDocs/BHT Promo iCloud/Organized AI/Windsurf/Dacras/backend\""
         echo ""
-        echo "Create comprehensive test suites for ALL API endpoints and ensure 90%+ test coverage."
+        echo "API REFERENCE: Read \"/Users/supabowl/Library/Mobile Documents/com~apple~CloudDocs/BHT Promo iCloud/Organized AI/Windsurf/Dacras/docs/API_REFERENCE.md\" for complete API specifications."
+        echo ""
+        echo "Create comprehensive test suites for ALL Dacras API endpoints AND Texel.ai integration points. Ensure 95%+ test coverage."
         ;;
     3)
         echo ""
         echo "🎬  Starting Video Processing Agent..."
+        echo "📚  IMPORTANT: This agent integrates with Texel.ai API"
+        echo "    API Docs: docs/API_REFERENCE.md (Texel.ai section)"
+        echo "    Endpoints: Lip-sync, video generation, image processing"
+        echo ""
         echo "Copy this prompt into Claude Code:"
         echo ""
         echo "claude --dangerously-skip-permissions"
@@ -67,7 +77,9 @@ case $choice in
         echo ""
         echo "CODEBASE LOCATION: \"/Users/supabowl/Library/Mobile Documents/com~apple~CloudDocs/BHT Promo iCloud/Organized AI/Windsurf/Dacras\""
         echo ""
-        echo "Implement robust video generation pipeline with Texel.ai integration, job management, and file storage."
+        echo "API REFERENCE: Read \"/Users/supabowl/Library/Mobile Documents/com~apple~CloudDocs/BHT Promo iCloud/Organized AI/Windsurf/Dacras/docs/API_REFERENCE.md\" for Texel.ai integration specifications."
+        echo ""
+        echo "Implement robust video generation pipeline with complete Texel.ai integration and job management."
         ;;
     4)
         echo ""
@@ -124,6 +136,11 @@ case $choice in
         ;;
 esac
 
+echo ""
+echo "📚 Key Resources:"
+echo "   • API Reference: docs/API_REFERENCE.md (Dacras + Texel.ai)"
+echo "   • Agent Documentation: CLAUDE_CODE_AGENTS.md"
+echo "   • Texel.ai Docs: https://api.prod.texel.ai/docs"
 echo ""
 echo "💡 Pro tip: Run agents in this recommended order:"
 echo "   API Testing → Frontend Integration → Video Processing → Image Generation → Integration & QA → DevOps"

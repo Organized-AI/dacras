@@ -1,0 +1,347 @@
+{
+  "info": {
+    "name": "Dacras AI - Complete API Collection",
+    "description": "Complete API testing collection for Dacras AI platform including Texel.ai integration",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{DACRAS_API_KEY}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "DACRAS_BASE_URL",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "TEXEL_BASE_URL", 
+      "value": "https://api.prod.texel.ai",
+      "type": "string"
+    },
+    {
+      "key": "DACRAS_API_KEY",
+      "value": "your_dacras_api_key_here",
+      "type": "string"
+    },
+    {
+      "key": "TEXEL_API_KEY",
+      "value": "your_texel_api_key_here",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Dacras API",
+      "description": "All Dacras platform API endpoints",
+      "item": [
+        {
+          "name": "System",
+          "item": [
+            {
+              "name": "Health Check",
+              "request": {
+                "method": "GET",
+                "url": "{{DACRAS_BASE_URL}}/health",
+                "header": []
+              }
+            },
+            {
+              "name": "API Info",
+              "request": {
+                "method": "GET",
+                "url": "{{DACRAS_BASE_URL}}/api/info"
+              }
+            }
+          ]
+        },
+        {
+          "name": "AI Actors",
+          "item": [
+            {
+              "name": "List All Actors",
+              "request": {
+                "method": "GET",
+                "url": "{{DACRAS_BASE_URL}}/api/actors"
+              }
+            },
+            {
+              "name": "Filter Actors",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{DACRAS_BASE_URL}}/api/actors?gender=female&style=professional",
+                  "host": ["{{DACRAS_BASE_URL}}"],
+                  "path": ["api", "actors"],
+                  "query": [
+                    {"key": "gender", "value": "female"},
+                    {"key": "style", "value": "professional"}
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Specific Actor",
+              "request": {
+                "method": "GET",
+                "url": "{{DACRAS_BASE_URL}}/api/actors/actor_001"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Script Generation",
+          "item": [
+            {
+              "name": "Generate Script",
+              "request": {
+                "method": "POST",
+                "url": "{{DACRAS_BASE_URL}}/api/v1/script/generate",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"product_name\": \"EcoClean Pro\",\n  \"target_audience\": \"environmentally conscious homeowners\",\n  \"key_message\": \"chemical-free cleaning solutions\",\n  \"tone\": \"friendly\",\n  \"duration\": 30,\n  \"call_to_action\": \"Try it risk-free today!\"\n}"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Video Generation",
+          "item": [
+            {
+              "name": "Generate Single Video",
+              "request": {
+                "method": "POST",
+                "url": "{{DACRAS_BASE_URL}}/api/v1/video/generate",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"script\": \"Transform your cleaning routine with EcoClean Pro!\",\n  \"actor_id\": \"actor_001\",\n  \"background_style\": \"modern_home\",\n  \"aspect_ratio\": \"16:9\",\n  \"quality\": \"hd\",\n  \"voice_speed\": 1.0,\n  \"add_captions\": true\n}"
+                }
+              }
+            },
+            {
+              "name": "Generate Variations",
+              "request": {
+                "method": "POST",
+                "url": "{{DACRAS_BASE_URL}}/api/v1/video/generate-variations",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"base_config\": {\n    \"script\": \"Your base script here\",\n    \"actor_id\": \"actor_001\"\n  },\n  \"variations_count\": 5,\n  \"vary_actors\": true,\n  \"vary_backgrounds\": true\n}"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Status & Downloads",
+          "item": [
+            {
+              "name": "Check Job Status",
+              "request": {
+                "method": "GET",
+                "url": "{{DACRAS_BASE_URL}}/api/v1/status/{{job_id}}"
+              }
+            },
+            {
+              "name": "Batch Status Check",
+              "request": {
+                "method": "POST",
+                "url": "{{DACRAS_BASE_URL}}/api/v1/status/batch",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"job_ids\": [\"uuid1\", \"uuid2\", \"uuid3\"]\n}"
+                }
+              }
+            },
+            {
+              "name": "Download Video",
+              "request": {
+                "method": "GET",
+                "url": "{{DACRAS_BASE_URL}}/api/v1/download/{{job_id}}"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Analytics",
+          "item": [
+            {
+              "name": "Usage Analytics",
+              "request": {
+                "method": "GET",
+                "url": "{{DACRAS_BASE_URL}}/api/v1/analytics/usage"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Texel.ai Integration",
+      "description": "Texel.ai API endpoints for video processing",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{TEXEL_API_KEY}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "Status Checks",
+          "item": [
+            {
+              "name": "Lipsync Status",
+              "request": {
+                "method": "GET",
+                "url": "{{TEXEL_BASE_URL}}/v1/lipsync/status/{{job_id}}"
+              }
+            },
+            {
+              "name": "Generation Status",
+              "request": {
+                "method": "GET", 
+                "url": "{{TEXEL_BASE_URL}}/v1/sd_server/status/{{job_id}}/{{model_type}}"
+              }
+            },
+            {
+              "name": "Video Encoder Status",
+              "request": {
+                "method": "GET",
+                "url": "{{TEXEL_BASE_URL}}/v1/video_encoder/status/{{job_id}}"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Video Processing",
+          "item": [
+            {
+              "name": "Run Lipsync",
+              "request": {
+                "method": "POST",
+                "url": "{{TEXEL_BASE_URL}}/v1/lipsync/run_lipsync",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"video_url\": \"https://example.com/input-video.mp4\",\n  \"audio_url\": \"https://example.com/audio.wav\",\n  \"output_format\": \"mp4\",\n  \"quality\": \"hd\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Get Lipsync URL",
+              "request": {
+                "method": "GET",
+                "url": "{{TEXEL_BASE_URL}}/v1/lipsync/get_url/{{job_id}}"
+              }
+            },
+            {
+              "name": "Encode Video",
+              "request": {
+                "method": "POST",
+                "url": "{{TEXEL_BASE_URL}}/v1/video_encoder/encode",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"input_video_url\": \"https://example.com/input.mp4\",\n  \"output_format\": \"mp4\",\n  \"quality\": \"1080p\"\n}"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Image Generation", 
+          "item": [
+            {
+              "name": "Text to Image",
+              "request": {
+                "method": "POST",
+                "url": "{{TEXEL_BASE_URL}}/v1/sd_server/txt2img",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"prompt\": \"Professional business office background, clean modern design\",\n  \"width\": 1920,\n  \"height\": 1080,\n  \"num_inference_steps\": 50,\n  \"guidance_scale\": 7.5\n}"
+                }
+              }
+            },
+            {
+              "name": "Image to Image",
+              "request": {
+                "method": "POST",
+                "url": "{{TEXEL_BASE_URL}}/v1/sd_server/img2img",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"init_image_url\": \"https://example.com/base-image.jpg\",\n  \"prompt\": \"Transform into professional studio background\",\n  \"strength\": 0.7\n}"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Video Generation",
+          "item": [
+            {
+              "name": "Text to Video",
+              "request": {
+                "method": "POST",
+                "url": "{{TEXEL_BASE_URL}}/v1/sd_server/txt2vid",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"prompt\": \"Professional person speaking in modern office setting\",\n  \"width\": 1920,\n  \"height\": 1080,\n  \"frames\": 120,\n  \"fps\": 24\n}"
+                }
+              }
+            },
+            {
+              "name": "Image to Video",
+              "request": {
+                "method": "POST",
+                "url": "{{TEXEL_BASE_URL}}/v1/sd_server/img2vid", 
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"init_image_url\": \"https://example.com/actor-image.jpg\",\n  \"motion_bucket_id\": 127,\n  \"fps\": 6,\n  \"noise_aug_strength\": 0.1\n}"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
