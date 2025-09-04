@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dacras-config
+  namespace: dacras
+data:
+  NODE_ENV: "production"
+  API_VERSION: "v1"
+  MAX_REQUEST_SIZE: "50mb"
+  CORS_ORIGIN: "*"
+  RATE_LIMIT_WINDOW: "900000"
+  RATE_LIMIT_MAX: "1000"
+  JWT_EXPIRY: "24h"
+  REDIS_DB: "0"
+  MONGODB_DB_NAME: "dacras"
+  LOG_LEVEL: "info"
+  UPLOAD_MAX_SIZE: "100mb"
+  VIDEO_PROCESSING_TIMEOUT: "300000"
+  TEXEL_API_TIMEOUT: "120000"
+  WEBHOOK_TIMEOUT: "30000"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: monitoring-config
+  namespace: dacras
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    
+    rule_files:
+      - "dacras_rules.yml"
+    
+    scrape_configs:
+      - job_name: 'dacras-backend'
+        static_configs:
+          - targets: ['dacras-backend:3000']
+        metrics_path: '/metrics'
+        scrape_interval: 10s
+      
+      - job_name: 'dacras-frontend'
+        static_configs:
+          - targets: ['dacras-frontend:3001']
+        metrics_path: '/api/metrics'
+        scrape_interval: 30s
+      
+      - job_name: 'redis'
+        static_configs:
+          - targets: ['redis:6379']
+      
+      - job_name: 'mongodb'
+        static_configs:
+          - targets: ['mongodb:27017']
+
+  dacras_rules.yml: |
+    groups:
+    - name: dacras_alerts
+      rules:
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} req/sec"
+      
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes / container_spec_memory_limit_bytes > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | humanizePercentage }}"
+      
+      - alert: LongVideoProcessingTime
+        expr: histogram_quantile(0.95, rate(video_processing_duration_seconds_bucket[5m])) > 300
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Long video processing time"
+          description: "95th percentile processing time is {{ $value }}s"

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dacras
+  labels:
+    name: dacras
+    app: dacras-ai-platform
+    environment: production
