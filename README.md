@@ -257,3 +257,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 **Built with ❤️ by BHT Labs**
 
 *Transforming ideas into captivating video advertisements with the power of AI*
+
+---
+
+Maintained by Jordaaan Hill ([LinkedIn](https://www.linkedin.com/in/jordaaanhill)).
